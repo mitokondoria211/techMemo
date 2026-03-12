@@ -11,8 +11,8 @@
     <groupId>com.example</groupId>
     <artifactId>techMemoApp</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>jwt-security</name>
-    <description>jwt-security</description>
+    <name>techMemo</name>
+    <description>techMemo</description>
     <url/>
     <licenses>
         <license/>
