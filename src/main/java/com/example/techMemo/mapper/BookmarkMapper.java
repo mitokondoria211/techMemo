@@ -1,8 +1,9 @@
 package com.example.techMemo.mapper;
 
 import com.example.techMemo.bookmark.Bookmark;
-import com.example.techMemo.bookmark.BookmarkCreateRequest;
+import com.example.techMemo.bookmark.BookmarkRequest;
 import com.example.techMemo.bookmark.BookmarkResponse;
+import com.example.techMemo.user.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -15,10 +16,10 @@ public interface BookmarkMapper {
     BookmarkResponse toResponse(Bookmark bookmark);
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "user", ignore = true)
+    @Mapping(target = "user", source = "user")
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
-    Bookmark toEntity(BookmarkCreateRequest request);
+    Bookmark toEntity(BookmarkRequest request, User user);
 
     List<BookmarkResponse> toResponseList(List<Bookmark> bookmarks);
 
