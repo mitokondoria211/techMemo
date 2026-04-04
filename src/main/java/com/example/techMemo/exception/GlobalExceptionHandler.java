@@ -19,7 +19,8 @@ public class GlobalExceptionHandler {
 
 
     /**
-     *データが見つからないときの例外クラス
+     * データが見つからないときの例外クラス
+     *
      * @param ex ResourceNotFoundException
      * @return ProblemDetail
      */
@@ -35,10 +36,27 @@ public class GlobalExceptionHandler {
         return problem;
     }
 
+    @ExceptionHandler(ForbiddenException.class)
+    public ProblemDetail handleForbidden(ForbiddenException ex, HttpServletRequest request) {
+        ProblemDetail problem = ProblemDetail.forStatus(HttpStatus.FORBIDDEN);
+        problem.setTitle("Forbidden");
+        problem.setDetail(ex.getMessage());
+        problem.setInstance(URI.create(request.getRequestURI()));
+        return problem;
+    }
+
+    @ExceptionHandler(UnauthorizedException.class)
+    public ProblemDetail handleUnauthorized(ForbiddenException ex, HttpServletRequest request) {
+        ProblemDetail problem = ProblemDetail.forStatus(HttpStatus.UNAUTHORIZED);
+        problem.setTitle("Unauthorized");
+        problem.setDetail(ex.getMessage());
+        problem.setInstance(URI.create(request.getRequestURI()));
+        return problem;
+    }
 
 
     @ExceptionHandler(DataIntegrityViolationException.class)
-    public ProblemDetail handleConflict(DataIntegrityViolationException ex,HttpServletRequest request) {
+    public ProblemDetail handleConflict(DataIntegrityViolationException ex, HttpServletRequest request) {
         ProblemDetail problem = ProblemDetail.forStatus(HttpStatus.CONFLICT);
         problem.setTitle("Conflict");
         problem.setDetail("既に存在するデータです");
@@ -48,6 +66,7 @@ public class GlobalExceptionHandler {
 
     /**
      * バリデーションエラークラス
+     *
      * @param ex
      * @param request
      * @return problem

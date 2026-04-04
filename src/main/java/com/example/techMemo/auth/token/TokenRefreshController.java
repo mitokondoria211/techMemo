@@ -63,14 +63,20 @@ public class TokenRefreshController {
             String refreshToken = Arrays.stream(request.getCookies())
                                         .filter(cookie -> "refreshToken".equals(cookie.getName()))
                                         .findFirst().map(Cookie::getValue).orElse(null);
+
+            if (refreshToken == null) {
+                return ResponseEntity.status(401).build();
+            }
+
+            Cookie[] cookies = request.getCookies();
+            if (cookies == null) {
+                return ResponseEntity.status(401).build();
+            }
             var jwt = jwtDecoder.decode(refreshToken);
 //            final String authHeader = request.getHeader("Authorization");
             String username = jwt.getSubject();
             UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
-            if (refreshToken == null) {
-                return ResponseEntity.status(401).build();
-            }
 
             // 新しいトークンの生成
             JwtService.JwtToken jwtToken = jwtService.generateToken(userDetails);

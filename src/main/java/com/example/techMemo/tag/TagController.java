@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("api/v1/tags")
+@RequestMapping("/api/v1/tags")
 @RequiredArgsConstructor
 public class TagController {
 

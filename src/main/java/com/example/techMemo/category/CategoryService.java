@@ -34,7 +34,7 @@ public class CategoryService {
         }
         Category category = mapper.toEntity(request);
         Category saved = repository.save(category);
-        return mapper.toResponse(category);
+        return mapper.toResponse(saved);
 
     }
 

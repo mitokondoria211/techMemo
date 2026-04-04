@@ -53,7 +53,7 @@ public class ArticleController {
 
     @GetMapping("/me/count/private")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<Long> getMyArticlesCountAndPrivate() {
+    public ResponseEntity<Long> getMyPrivateArticlesCount() {
         return ResponseEntity.ok(service.getMyPrivateArticlesCount());
     }
 
@@ -119,6 +119,4 @@ public class ArticleController {
         likeService.unlike(id);
         return ResponseEntity.noContent().build();
     }
-
-
 }
