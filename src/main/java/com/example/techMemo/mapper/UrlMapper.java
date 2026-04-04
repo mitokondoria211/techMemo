@@ -3,7 +3,6 @@ package com.example.techMemo.mapper;
 import com.example.techMemo.url.Url;
 import com.example.techMemo.url.UrlRequest;
 import com.example.techMemo.url.UrlResponse;
-import com.example.techMemo.user.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -19,7 +18,7 @@ public interface UrlMapper {
     @Mapping(target = "article", ignore = true)     // Serviceでセット
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
-    @Mapping(target = "user", source = "user")
-    Url toEntity(UrlRequest request, User user);
+    Url toEntity(UrlRequest request);
+
     List<UrlResponse> toResponseList(List<Url> urls);
 }

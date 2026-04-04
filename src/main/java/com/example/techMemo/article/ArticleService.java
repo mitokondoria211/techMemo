@@ -45,8 +45,8 @@ public class ArticleService {
         );
     }
 
-    // ✅ パラメータを追加して既存のsearchメソッドを活用
-    Page<ArticleResponse> getMyArticles(
+    //パラメータを追加して既存のsearchメソッドを活用
+    public Page<ArticleResponse> getMyArticles(
         String keyword, Long tagId, Long categoryId, Pageable pageable
     ) {
         User user = getUser();
@@ -78,14 +78,16 @@ public class ArticleService {
 
     //記事詳細
     public ArticleDetailResponse getArticle(Long id) {
-        Article article = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Article not found"));
+        String currentUsername = SecurityUtils.getCurrentUsernameOrNull();
+        User currentUser = currentUsername != null ? getUser() : null;
+        Article article = getArticleById(id);
 
         if (!article.isPublicFlag()) {
             if (SecurityUtils.getCurrentUsernameOrNull() == null) {
                 throw new UnauthorizedException("この記事は非公開です。");
             }
-            User user = getUser();
-            if (!article.getUser().equals(user)) {
+
+            if (!article.getUser().equals(currentUser)) {
                 throw new UnauthorizedException("この記事は非公開です。");
             }
         }

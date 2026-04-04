@@ -45,18 +45,18 @@ public class UrlController {
         return ResponseEntity.noContent().build();
     }
 
-    @PatchMapping("/{urlId}/attach/{articleId}")
-    public ResponseEntity<UrlResponse> attach(
-        @PathVariable Long urlId,
-        @PathVariable Long articleId
-    ) {
-        return ResponseEntity.ok(service.attachToArticle(urlId, articleId));
-    }
-
-    @PatchMapping("/{urlId}/detach")
-    public ResponseEntity<UrlResponse> detach(
-        @PathVariable Long urlId
-    ) {
-        return ResponseEntity.ok(service.detachFromArticle(urlId));
-    }
+//    @PatchMapping("/{urlId}/attach/{articleId}")
+//    public ResponseEntity<UrlResponse> attach(
+//        @PathVariable Long urlId,
+//        @PathVariable Long articleId
+//    ) {
+//        return ResponseEntity.ok(service.attachToArticle(urlId, articleId));
+//    }
+//
+//    @PatchMapping("/{urlId}/detach")
+//    public ResponseEntity<UrlResponse> detach(
+//        @PathVariable Long urlId
+//    ) {
+//        return ResponseEntity.ok(service.detachFromArticle(urlId));
+//    }
 }

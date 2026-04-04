@@ -1,9 +1,11 @@
 package com.example.techMemo.url;
 
 import com.example.techMemo.article.entity.Article;
-import com.example.techMemo.user.User;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -15,9 +17,9 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Entity
 // ユーザー×URLでユニーク制約
+// ユニーク制約も article_id + url に変更
 @Table(
-    name = "urls",
-    uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "url"})
+    uniqueConstraints = @UniqueConstraint(columnNames = {"article_id", "url"})
 )
 public class Url {
 
@@ -25,15 +27,13 @@ public class Url {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "user_id", nullable = false)
+//    private User user;
 
-    // NULLの場合は単体ブックマーク
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "article_id", nullable = false) // ✅ 必ず記事に紐付く
+    @JoinColumn(name = "article_id", nullable = false)
     private Article article;
-
 
     @Column(nullable = false, length = 500)
     private String url;
@@ -41,31 +41,20 @@ public class Url {
     @Column(nullable = false, length = 255)
     private String title;
 
-    @Column(nullable = false)
-    private int sortOrder = 0;
-
     @CreationTimestamp
     private LocalDateTime createdAt;
 
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
-    public void update(String url, String title, int sortOrder) {
+    public void update(String url, String title) {
         this.url = url;
         this.title = title;
-        this.sortOrder = sortOrder;
     }
-
 
     // 記事への紐づけ・解除
     public void attachToArticle(Article article) {
         this.article = article;
     }
-
-    public void detachFromArticle() {
-        this.article = null;
-    }
-
-
 
 }

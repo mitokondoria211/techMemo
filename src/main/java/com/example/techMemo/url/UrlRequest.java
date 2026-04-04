@@ -1,8 +1,14 @@
 package com.example.techMemo.url;
 
-public record UrlRequest(
-    String url,
-    String title,
+import jakarta.validation.constraints.NotBlank;
+import org.hibernate.validator.constraints.URL;
 
-    int sortOrder) {
+public record UrlRequest(
+    @NotBlank
+    String title,
+    @NotBlank
+    @URL
+    String url,
+    int sortOrder
+) {
 }

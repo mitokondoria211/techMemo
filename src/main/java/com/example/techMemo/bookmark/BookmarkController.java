@@ -24,7 +24,7 @@ public class BookmarkController {
     @GetMapping("/count")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Long> getMyAllCount() {
-        return ResponseEntity.ok(service.getMyBookmarksCount());
+        return ResponseEntity.ok(service.getMyAllCount());
     }
 
 

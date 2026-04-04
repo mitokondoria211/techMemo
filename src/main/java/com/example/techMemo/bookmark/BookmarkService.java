@@ -34,7 +34,7 @@ public class BookmarkService {
         return mapper.toResponse(bookmark);
     }
 
-    public Long getMyBookmarksCount() {
+    public Long getMyAllCount() {
         User user = getUser();
         return repository.countByUser(user);
     }

@@ -2,12 +2,10 @@ package com.example.techMemo.url;
 
 import com.example.techMemo.article.ArticleRepository;
 import com.example.techMemo.article.entity.Article;
-import com.example.techMemo.exception.ForbiddenException;
 import com.example.techMemo.exception.ResourceNotFoundException;
 import com.example.techMemo.mapper.UrlMapper;
 import com.example.techMemo.user.User;
 import com.example.techMemo.user.UserRepository;
-import com.example.techMemo.utils.security.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,23 +23,23 @@ public class UrlService {
     private final UrlMapper mapper;
 
     //自分のurl一覧
-    public List<UrlResponse> getMyUrls() {
-        User user = getUser();
-        return repository.findByUserOrderBySortOrderAsc(user)
-                         .stream()
-                         .map(mapper::toResponse)
-                         .toList();
-    }
+//    public List<UrlResponse> getMyUrls() {
+//        User user = getUser();
+//        return repository.findByUserOrderBySortOrderAsc(user)
+//                         .stream()
+//                         .map(mapper::toResponse)
+//                         .toList();
+//    }
 
     @Transactional
     public UrlResponse create(UrlRequest request) {
-        User user = getUser();
+//        User user = getUser();
+//
+//        if (repository.existsByUrlAndUser(request.url(), user)) {
+//            throw new IllegalStateException("同じURLが既に登録されています");
+//        }
 
-        if (repository.existsByUrlAndUser(request.url(), user)) {
-            throw new IllegalStateException("同じURLが既に登録されています");
-        }
-
-        Url url = mapper.toEntity(request, user);
+        Url url = mapper.toEntity(request);
         Url saved = repository.save(url);
 
         return mapper.toResponse(saved);
@@ -51,7 +49,7 @@ public class UrlService {
 
     public List<UrlResponse> getUrlsByArticle(Long articleId) {
         Article article = getArticleById(articleId);
-        return repository.findByArticleOrderBySortOrder(article)
+        return repository.findByArticleOrderByUpdatedAt(article)
                          .stream()
                          .map(mapper::toResponse)
                          .toList();
@@ -77,7 +75,7 @@ public class UrlService {
         User user = getUser();
         Url url = getUrlById(urlId);
         checkOwner(url, user);
-        url.update(request.url(), request.title(), request.sortOrder());
+        url.update(request.url(), request.title());
         return mapper.toResponse(url);
     }
 
@@ -102,18 +100,18 @@ public class UrlService {
         return mapper.toResponse(url);
     }
 
-    @Transactional
-    public UrlResponse detachFromArticle(Long urlId) {
-        User user = getUser();
-        Url url = findMyUrl(urlId, user);
-
-        if (url.getArticle() == null) {
-            throw new IllegalStateException("このURLは記事に紐づいていません");
-        }
-
-        url.detachFromArticle();
-        return mapper.toResponse(url);
-    }
+//    @Transactional
+//    public UrlResponse detachFromArticle(Long urlId) {
+//        User user = getUser();
+//        Url url = findMyUrl(urlId, user);
+//
+//        if (url.getArticle() == null) {
+//            throw new IllegalStateException("このURLは記事に紐づいていません");
+//        }
+//
+//        url.detachFromArticle();
+//        return mapper.toResponse(url);
+//    }
 
     private Url getUrlById(Long id) {
         return repository.findById(id)
@@ -121,27 +119,27 @@ public class UrlService {
     }
 
 
-    private User getUser() {
-        String email = SecurityUtils.getCurrentUsername();
-        return userRepository.findByEmail(email)
-                             .orElseThrow(() -> new ResourceNotFoundException("ユーザーが見つかりません"));
-    }
+//    private User getUser() {
+//        String email = SecurityUtils.getCurrentUsername();
+//        return userRepository.findByEmail(email)
+//                             .orElseThrow(() -> new ResourceNotFoundException("ユーザーが見つかりません"));
+//    }
 
-    private Article getArticleById(Long articleId) {
-        return articleRepository.findById(articleId)
-                                .orElseThrow(() -> new ResourceNotFoundException("記事が見つかりません"));
-    }
-
-    private void checkOwner(Url url, User user) {
-        if (!url.getUser().equals(user)) {
-            throw new ForbiddenException("このURLを操作する権限がありません");
-        }
-    }
-
-    private Url findMyUrl(Long id, User user) {
-        Url url = repository.findById(id)
-                            .orElseThrow(() -> new ResourceNotFoundException("URLが見つかりません"));
-        checkOwner(url, user);
-        return url;
-    }
+//    private Article getArticleById(Long articleId) {
+//        return articleRepository.findById(articleId)
+//                                .orElseThrow(() -> new ResourceNotFoundException("記事が見つかりません"));
+//    }
+//
+//    private void checkOwner(Url url, User user) {
+//        if (!url.getUser().equals(user)) {
+//            throw new ForbiddenException("このURLを操作する権限がありません");
+//        }
+//    }
+//
+//    private Url findMyUrl(Long id, User user) {
+//        Url url = repository.findById(id)
+//                            .orElseThrow(() -> new ResourceNotFoundException("URLが見つかりません"));
+//        checkOwner(url, user);
+//        return url;
+//    }
 }
