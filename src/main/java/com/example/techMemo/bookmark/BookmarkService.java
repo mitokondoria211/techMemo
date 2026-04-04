@@ -8,11 +8,13 @@ import com.example.techMemo.user.UserRepository;
 import com.example.techMemo.utils.security.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class BookmarkService {
     private final BookmarkRepository repository;
     private final UserRepository userRepository;
@@ -28,9 +30,17 @@ public class BookmarkService {
         User user = getUser();
         Bookmark bookmark = repository.findById(id)
                                       .orElseThrow(() -> new ResourceNotFoundException("Bookmark not found"));
+        checkOwner(bookmark, user);
         return mapper.toResponse(bookmark);
     }
+    
+    public Long getMyBookmarksCount() {
+        User user = getUser();
+        return repository.countByUser(user);
+    }
 
+
+    @Transactional
     public BookmarkResponse create(BookmarkRequest request) {
         User user = getUser();
         Bookmark bookmark = mapper.toEntity(request, user);
@@ -38,15 +48,17 @@ public class BookmarkService {
         return mapper.toResponse(repository.save(bookmark));
     }
 
+    @Transactional
     public BookmarkResponse update(Long id, BookmarkRequest request) {
         User user = getUser();
         Bookmark bookmark = repository.findById(id)
                                       .orElseThrow(() -> new ResourceNotFoundException("Bookmark not found"));
-        bookmark.update(request.url(), request.title(), request.memo(), request.sortOrder());
-
+        checkOwner(bookmark, user);
+        bookmark.update(request.url(), request.title(), request.memo());
         return mapper.toResponse(repository.save(bookmark));
     }
 
+    @Transactional
     public void deleteById(Long id) {
         User user = getUser();
         Bookmark bookmark = repository.findById(id)

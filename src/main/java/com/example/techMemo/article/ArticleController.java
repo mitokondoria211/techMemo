@@ -1,9 +1,6 @@
 package com.example.techMemo.article;
 
-import com.example.techMemo.article.dto.ArticleCreateRequest;
-import com.example.techMemo.article.dto.ArticleDetailResponse;
-import com.example.techMemo.article.dto.ArticleResponse;
-import com.example.techMemo.article.dto.ArticleUpdateRequest;
+import com.example.techMemo.article.dto.*;
 import com.example.techMemo.like.LikeService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +11,8 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/articles")
@@ -26,6 +25,7 @@ public class ArticleController {
     public ResponseEntity<Page<ArticleResponse>> getArticles(Pageable pageable) {
         return ResponseEntity.ok(service.getArticles(pageable));
     }
+
     @GetMapping("/me")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Page<ArticleResponse>> getMyArticles(
@@ -36,6 +36,27 @@ public class ArticleController {
     ) {
         return ResponseEntity.ok(service.getMyArticles(keyword, tagId, categoryId, pageable));
     }
+
+    @GetMapping("/me/recent")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<List<ArticleResponse>> getMyArticles(
+    ) {
+        return ResponseEntity.ok(service.getRecentMyArticles());
+    }
+
+
+    @GetMapping("/me/count")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<Long> getMyArticlesCount() {
+        return ResponseEntity.ok(service.getMyArticlesCount());
+    }
+
+    @GetMapping("/me/count/private")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<Long> getMyArticlesCountAndPrivate() {
+        return ResponseEntity.ok(service.getMyArticlesCountAndPrivate());
+    }
+
 
     @GetMapping("/{id}")
     public ResponseEntity<ArticleDetailResponse> getArticle(@PathVariable Long id) {
@@ -51,9 +72,19 @@ public class ArticleController {
     @PutMapping("/{id}")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<ArticleResponse> update(
-        @PathVariable Long id,@Valid @RequestBody ArticleUpdateRequest request
+        @PathVariable Long id, @Valid @RequestBody ArticleUpdateRequest request
     ) {
         return ResponseEntity.ok(service.update(id, request));
+    }
+
+    @PatchMapping("/{id}/visibility")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<ArticleResponse> updateVisibility(
+        @PathVariable Long id,
+        @Valid @RequestBody ArticleUpdatePublicFlagRequest request
+    ) {
+        service.updateVisibility(id, request.publicFlag());
+        return ResponseEntity.ok(service.updateVisibility(id, request.publicFlag()));
     }
 
     @DeleteMapping("/{id}")
@@ -69,7 +100,7 @@ public class ArticleController {
         @RequestParam(required = false) Long tagId,
         @RequestParam(required = false) Long categoryId,
         @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
-    ){
+    ) {
         return ResponseEntity.ok(service.search(keyword, tagId, categoryId, pageable));
     }
 
@@ -89,8 +120,6 @@ public class ArticleController {
         likeService.unlike(id);
         return ResponseEntity.noContent().build();
     }
-
-
 
 
 }

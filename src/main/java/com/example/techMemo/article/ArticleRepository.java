@@ -23,26 +23,28 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
 
     Page<Article> findByPublicFlagTrue(Pageable pageable);
 
+    Long countArticleByUser(User user);
+
+    Long countArticleByUserAndPublicFlagFalse(User user);
+
+    List<Article> findTop3ByUserOrderByUpdatedAtDesc(User user);
+
     // 検索（キーワード・タグ・カテゴリ）
     @Query(
         value = """
-        SELECT DISTINCT a FROM Article a
-        JOIN FETCH a.user
-        LEFT JOIN FETCH a.category
-        LEFT JOIN FETCH a.tags t
-        WHERE a.publicFlag = true
-        AND (:keyword IS NULL OR a.title LIKE %:keyword% OR a.content LIKE %:keyword%)
-        AND (:tagId IS NULL OR t.id = :tagId)
-        AND (:categoryId IS NULL OR a.category.id = :categoryId)
-        """,
-        countQuery = """
-        SELECT COUNT(DISTINCT a) FROM Article a
-        LEFT JOIN a.tags t
-        WHERE a.publicFlag = true
-        AND (:keyword IS NULL OR a.title LIKE %:keyword% OR a.content LIKE %:keyword%)
-        AND (:tagId IS NULL OR t.id = :tagId)
-        AND (:categoryId IS NULL OR a.category.id = :categoryId)
-        """
+            SELECT DISTINCT a FROM Article a
+            JOIN FETCH a.user
+            LEFT JOIN FETCH a.category
+            LEFT JOIN FETCH a.tags
+            WHERE a.publicFlag = true
+            AND (:keyword IS NULL OR a.title LIKE %:keyword% OR a.content LIKE %:keyword%)
+            AND (:categoryId IS NULL OR a.category.id = :categoryId)
+            AND (
+                :tagId IS NULL OR EXISTS (
+                    SELECT 1 FROM a.tags t2 WHERE t2.id = :tagId
+                )
+            )
+            """
     )
     Page<Article> search(
         @Param("keyword") String keyword,
@@ -54,24 +56,19 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
     // ✅ 追加：userの絞り込みだけ加えたメソッド
     @Query(
         value = """
-    SELECT DISTINCT a FROM Article a
-    JOIN FETCH a.user
-    LEFT JOIN FETCH a.category
-    LEFT JOIN FETCH a.tags t
-    WHERE a.user = :user
-    AND (:keyword IS NULL OR a.title LIKE %:keyword% OR a.content LIKE %:keyword%)
-    AND (:tagId IS NULL OR t.id = :tagId)
-    AND (:categoryId IS NULL OR a.category.id = :categoryId)
-    """,
-        countQuery = """
-    SELECT COUNT(DISTINCT a) FROM Article a
-    LEFT JOIN a.tags t
-    WHERE a.user = :user
-    AND (:keyword IS NULL OR a.title LIKE %:keyword% OR a.content LIKE %:keyword%)
-    AND (:tagId IS NULL OR t.id = :tagId)
-    AND (:categoryId IS NULL OR a.category.id = :categoryId)
-    """
-    )
+            SELECT DISTINCT a FROM Article a
+            JOIN FETCH a.user
+            LEFT JOIN FETCH a.category
+            LEFT JOIN FETCH a.tags
+            WHERE a.user = :user
+            AND (:keyword IS NULL OR a.title LIKE %:keyword% OR a.content LIKE %:keyword%)
+            AND (:categoryId IS NULL OR a.category.id = :categoryId)
+            AND (
+                :tagId IS NULL OR EXISTS (
+                    SELECT 1 FROM a.tags t2 WHERE t2.id = :tagId
+                )
+            )
+            """)
     Page<Article> searchByUser(
         @Param("keyword") String keyword,
         @Param("tagId") Long tagId,

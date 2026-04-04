@@ -1,6 +1,6 @@
 package com.example.techMemo.bookmark;
 
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
+
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +20,13 @@ public class BookmarkController {
     public ResponseEntity<List<BookmarkResponse>> getMyAll() {
         return ResponseEntity.ok(service.getMyAll());
     }
+
+    @GetMapping("/count")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<Long> getMyAllCount() {
+        return ResponseEntity.ok(service.getMyBookmarksCount());
+    }
+
 
     @GetMapping("/{id}")
     @PreAuthorize("isAuthenticated()")

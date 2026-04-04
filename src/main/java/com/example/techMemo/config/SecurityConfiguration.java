@@ -52,9 +52,10 @@ public class SecurityConfiguration {
 //    private final AuthenticationProvider authenticationProvider;
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http,RestAuthenticationEntryPoint restAuthenticationEntryPoint,
+    public SecurityFilterChain securityFilterChain(HttpSecurity http,
+                                                   RestAuthenticationEntryPoint restAuthenticationEntryPoint,
                                                    RestAccessDeniedHandler restAccessDeniedHandler
-                                                   ) throws Exception{
+    ) throws Exception {
         http
 
             // 👇 最新はここでCORS
@@ -63,14 +64,12 @@ public class SecurityConfiguration {
 
 
             .sessionManagement(session ->
-                session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                                   session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .oauth2ResourceServer(oauth2 -> oauth2
                 .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())))
-//            .authenticationProvider(authenticationProvider)
-//            .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
             .exceptionHandling(ex -> ex
-                .authenticationEntryPoint( restAuthenticationEntryPoint)
-      .accessDeniedHandler(restAccessDeniedHandler))
+                .authenticationEntryPoint(restAuthenticationEntryPoint)
+                .accessDeniedHandler(restAccessDeniedHandler))
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(
                     "/swagger-ui.html",
@@ -98,7 +97,7 @@ public class SecurityConfiguration {
 
         // メソッド
         config.setAllowedMethods(List.of(
-            "GET","POST","PUT","DELETE","OPTIONS"
+            "GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"
         ));
 
         // ヘッダー

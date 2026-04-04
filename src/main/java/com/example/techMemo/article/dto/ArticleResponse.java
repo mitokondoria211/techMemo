@@ -2,6 +2,7 @@ package com.example.techMemo.article.dto;
 
 import com.example.techMemo.category.CategoryResponse;
 import com.example.techMemo.tag.TagResponse;
+import com.example.techMemo.url.UrlResponse;
 import com.example.techMemo.user.UserResponse;
 import lombok.Builder;
 
@@ -17,10 +18,10 @@ public record ArticleResponse(
     UserResponse user,
     CategoryResponse category,
     List<TagResponse> tags,
-//    List<UrlResponse> urls,
+    List<UrlResponse> urls,
     long likeCount,
     boolean likedByMe,
     LocalDateTime createdAt,
     LocalDateTime updatedAt
-    ) {
+) {
 }

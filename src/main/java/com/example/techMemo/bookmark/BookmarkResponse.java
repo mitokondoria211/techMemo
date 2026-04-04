@@ -8,6 +8,6 @@ public record BookmarkResponse(
     LocalDateTime updatedAt,
     String url,
     String title,
-    int sortOrder
+    String memo
 ) {
 }

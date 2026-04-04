@@ -19,8 +19,6 @@ import com.example.techMemo.user.User;
 import com.example.techMemo.user.UserRepository;
 import com.example.techMemo.utils.security.SecurityUtils;
 import lombok.RequiredArgsConstructor;
-
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -30,6 +28,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class ArticleService {
     private final UserRepository userRepository;
     private final ArticleRepository repository;
@@ -42,7 +41,6 @@ public class ArticleService {
     private final TagService tagService;
 
     //公開記事一覧
-    @Transactional(readOnly = true)
     public Page<ArticleResponse> getArticles(Pageable pageable) {
         return repository.findByPublicFlagTrue(pageable).map(
             article -> mapper.toResponse(article, likeRepository.countByArticle(article), false)
@@ -50,8 +48,7 @@ public class ArticleService {
     }
 
     // ✅ パラメータを追加して既存のsearchメソッドを活用
-    @Transactional(readOnly = true)
-    public Page<ArticleResponse> getMyArticles(
+    Page<ArticleResponse> getMyArticles(
         String keyword, Long tagId, Long categoryId, Pageable pageable
     ) {
         User user = getUser();
@@ -61,15 +58,26 @@ public class ArticleService {
                          ));
     }
 
+    public List<ArticleResponse> getRecentMyArticles() {
+        User user = getUser();
+        return repository.findTop3ByUserOrderByUpdatedAtDesc(user)
+                         .stream()
+                         .map(mapper::toResponse)
+                         .toList();
+    }
 
-//    @Transactional(readOnly = true)
-//    //自分の記事一覧
-//    public Page<ArticleResponse> getMyArticles(Pageable pageable) {
-//        User user = getUser();
-//        return repository.findByUser(user, pageable)
-//                         .map(article -> mapper.toResponse(article, likeRepository.countByArticle(article), false));
-//
-//    }
+
+    public Long getMyArticlesCount() {
+        User user = getUser();
+        return repository.countArticleByUser(user);
+    }
+
+
+    public Long getMyArticlesCountAndPrivate() {
+        User user = getUser();
+        return repository.countArticleByUserAndPublicFlagFalse(user);
+    }
+
 
     @Transactional(readOnly = true)
     //記事詳細
@@ -87,12 +95,14 @@ public class ArticleService {
         }
 
         long likeCount = likeRepository.countByArticle(article);
-        boolean likeByMe = SecurityUtils.getCurrentUsernameOrNull() != null  && likeRepository.existsByUserAndArticle(getUser(), article);
+        boolean likeByMe = SecurityUtils.getCurrentUsernameOrNull() != null && likeRepository.existsByUserAndArticle(
+            getUser(), article);
 
         return mapper.toResponseDetail(article, likeCount, likeByMe);
     }
 
     //記事作成
+    @Transactional
     public ArticleResponse create(ArticleCreateRequest request) {
         User user = getUser();
         List<Tag> tags = tagService.findOrCreateAll(request.tagNames());
@@ -109,7 +119,8 @@ public class ArticleService {
     }
 
     //記事更新
-    public ArticleResponse update(Long id ,ArticleUpdateRequest request) {
+    @Transactional
+    public ArticleResponse update(Long id, ArticleUpdateRequest request) {
         User user = getUser();
         Article article = getArticleById(id);
 
@@ -119,11 +130,12 @@ public class ArticleService {
         List<Tag> tags = tagService.findOrCreateAll(request.tagNames());
         Category category = resolveCategory(request.categoryId());
 
-        article.update(request.title(),request.content(), request.publicFlag(), category, tags);
+        article.update(request.title(), request.content(), request.publicFlag(), category, tags);
 
-        return mapper.toResponse(article,likeRepository.countByArticle(article), false);
+        return mapper.toResponse(article, likeRepository.countByArticle(article), false);
     }
 
+    @Transactional
     public void delete(Long id) {
         User user = getUser();
         Article article = getArticleById(id);
@@ -135,7 +147,17 @@ public class ArticleService {
 
     public Page<ArticleResponse> search(String keyword, Long tagId, Long categoryId, Pageable pageable) {
         return repository.search(keyword, tagId, categoryId, pageable)
-                         .map(article ->  mapper.toResponse(article, likeRepository.countByArticle(article), false));
+                         .map(article -> mapper.toResponse(article, likeRepository.countByArticle(article), false));
+    }
+
+    @Transactional
+    public ArticleResponse updateVisibility(Long id, Boolean publicFlag) {
+        User user = getUser();
+        Article article = getArticleById(id);
+        checkOwner(article, user);
+        article.setPublicFlag(publicFlag);
+
+        return mapper.toResponse(article);
     }
 
     // ユーザー取得
@@ -152,7 +174,7 @@ public class ArticleService {
 
     // 本人チェック
     private void checkOwner(Article article, User user) {
-        if (!user.equals(article.getUser())) {
+        if (!user.getId().equals(article.getUser().getId())) {
             throw new UnauthorizedException("この記事を操作する権限はありません");
         }
     }
@@ -160,7 +182,8 @@ public class ArticleService {
     // カテゴリ取得（nullも許容）
     private Category resolveCategory(Long categoryId) {
         if (categoryId == null) return null;
-        return categoryRepository.findById(categoryId).orElseThrow(() -> new ResourceNotFoundException("カテゴリーが見つかりません"));
+        return categoryRepository.findById(categoryId)
+                                 .orElseThrow(() -> new ResourceNotFoundException("カテゴリーが見つかりません"));
     }
 
 

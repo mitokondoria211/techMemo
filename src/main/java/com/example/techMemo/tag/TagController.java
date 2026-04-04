@@ -20,6 +20,11 @@ public class TagController {
         return ResponseEntity.ok(service.findAll());
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<TagResponse> getTag(@PathVariable Long id) {
+        return ResponseEntity.ok(service.findById(id));
+    }
+
     @PostMapping
     public ResponseEntity<TagResponse> create(
         @RequestBody @Valid TagRequest request
@@ -30,7 +35,7 @@ public class TagController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         service.delete(id);
-        return  ResponseEntity.noContent().build();
+        return ResponseEntity.noContent().build();
     }
 
 }

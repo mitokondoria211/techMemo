@@ -5,6 +5,8 @@ import com.example.techMemo.mapper.UserMapper;
 import com.example.techMemo.user.Role;
 import com.example.techMemo.user.User;
 import com.example.techMemo.user.UserRepository;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -53,25 +55,27 @@ public class AuthenticationService {
 //    public record AuthenticationResponse(String accessToken, String refreshToken) {
 //    }
 
-    public AuthenticationResponse register(RegisterRequest request) {
+    public AuthenticationResponse register(RegisterRequest request, HttpServletResponse response) {
         var user = User.builder()
-            .name(request.name())
-            .email(request.email())
-            .password(passwordEncoder.encode(request.password()))
-            .role(Role.USER)
-            .build();
+                       .name(request.name())
+                       .email(request.email())
+                       .password(passwordEncoder.encode(request.password()))
+                       .role(Role.USER)
+                       .build();
         repository.save(user);
         var jwtToken = jwtService.generateToken(user);
+        // 🔥 refreshTokenをcookieへ
+        setCookieFromRefreshToken(jwtToken.refreshToken(), response);
 
 
-        return new AuthenticationResponse(jwtToken.token(), jwtToken.refreshToken(), userMapper.toUserResponse(user));
+        return new AuthenticationResponse(jwtToken.token(), userMapper.toUserResponse(user));
 //        return AuthenticationResponse.builder()
 //            .token(jwtToken)
 //            .build();
     }
 
-    public AuthenticationResponse authenticate(AuthenticationRequest request) {
-        Authentication authentication =  authenticationManager.authenticate(
+    public AuthenticationResponse authenticate(AuthenticationRequest request, HttpServletResponse response) {
+        Authentication authentication = authenticationManager.authenticate(
             new UsernamePasswordAuthenticationToken(
                 request.email(),
                 request.password()
@@ -81,9 +85,21 @@ public class AuthenticationService {
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         var user = repository.findByEmail(request.email())
-            .orElseThrow(() -> new UsernameNotFoundException("User not Found"));
+                             .orElseThrow(() -> new UsernameNotFoundException("User not Found"));
         var jwtToken = jwtService.generateToken(authentication);
-        return new AuthenticationResponse(jwtToken.token(), jwtToken.refreshToken(),userMapper.toUserResponse(user));
+        // 🔥 refreshTokenをcookieへ
+        setCookieFromRefreshToken(jwtToken.refreshToken(), response);
+        // 🔥 refreshTokenをcookieへ
+        return new AuthenticationResponse(jwtToken.token(), userMapper.toUserResponse(user));
 
+    }
+
+    private void setCookieFromRefreshToken(String refreshToken, HttpServletResponse response) {
+        Cookie cookie = new Cookie("refreshToken", refreshToken);
+        cookie.setHttpOnly(true);
+        cookie.setSecure(false); //本番ならtrue, localhostならfalse
+        cookie.setPath("/");
+        cookie.setMaxAge(7 * 24 * 60 * 60);
+        response.addCookie(cookie);
     }
 }

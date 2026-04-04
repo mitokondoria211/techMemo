@@ -36,19 +36,15 @@ public class Bookmark {
     @Column(length = 255)
     private String memo;
 
-    @Column(nullable = false)
-    private int sortOrder = 0;
-
     @CreationTimestamp
     private LocalDateTime createdAt;
 
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
-    public void update(String url, String title, String memo, int sortOrder) {
+    public void update(String url, String title, String memo) {
         this.url = url;
         this.title = title;
         this.memo = memo;
-        this.sortOrder = sortOrder;
     }
 }

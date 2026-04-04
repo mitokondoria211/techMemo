@@ -19,7 +19,7 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Entity
-@Table(name="articles")
+@Table(name = "articles")
 public class Article {
 
     @Id
@@ -79,6 +79,10 @@ public class Article {
         this.publicFlag = publicFlag != null ? publicFlag : this.publicFlag;
         this.category = category;
         this.tags = tags;
+    }
+
+    public void setPublicFlag(Boolean publicFlag) {
+        this.publicFlag = publicFlag != null ? publicFlag : this.publicFlag;
     }
 
 

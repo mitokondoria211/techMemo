@@ -1,5 +1,6 @@
 package com.example.techMemo.auth;
 
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,16 +17,16 @@ public class AuthenticationController {
 
     @PostMapping("/register")
     public ResponseEntity<AuthenticationResponse> register(
-        @RequestBody RegisterRequest request
+        @RequestBody RegisterRequest request, HttpServletResponse response
     ) {
-        return ResponseEntity.ok(service.register(request));
+        return ResponseEntity.ok(service.register(request, response));
     }
 
     @PostMapping("/authenticate")
     public ResponseEntity<AuthenticationResponse> authenticate(
-        @RequestBody AuthenticationRequest request
+        @RequestBody AuthenticationRequest request, HttpServletResponse response
     ) {
-        return ResponseEntity.ok(service.authenticate(request));
+        return ResponseEntity.ok(service.authenticate(request, response));
 
     }
 }

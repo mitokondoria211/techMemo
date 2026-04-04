@@ -10,21 +10,22 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class CategoryService {
 
     private final CategoryRepository repository;
     private final CategoryMapper mapper;
 
-    @Transactional(readOnly = true)
     //一覧取得(全件)
     public List<CategoryResponse> getAll() {
         return repository.findAllByOrderByNameAsc()
-            .stream()
-            .map(mapper::toResponse)
-            .toList();
+                         .stream()
+                         .map(mapper::toResponse)
+                         .toList();
     }
 
     //作成
+    @Transactional
     public CategoryResponse create(CategoryCreateRequest request) {
 
         //重複チェック
@@ -38,6 +39,7 @@ public class CategoryService {
     }
 
     //削除
+    @Transactional
     public void delete(Long id) {
         if (!repository.existsById(id)) {
             throw new ResourceNotFoundException("カテゴリーが見つかりません");

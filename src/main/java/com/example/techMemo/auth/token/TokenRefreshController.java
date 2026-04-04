@@ -1,6 +1,7 @@
 package com.example.techMemo.auth.token;
 
 import com.example.techMemo.config.JwtService;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +13,8 @@ import org.springframework.security.oauth2.jwt.JwtException;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Arrays;
 
 /**
  * トークンリフレッシュコントローラー
@@ -55,22 +58,19 @@ public class TokenRefreshController {
     public ResponseEntity<TokenRefreshResponse> refreshToken(
         HttpServletRequest request) {
         // Authorizationヘッダーからリフレッシュトークンを取得
-        final String authHeader = request.getHeader("Authorization");
-
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            return ResponseEntity.badRequest().build();
-        }
 
         try {
-            // トークンの取得と検証
-            String refreshToken = authHeader.substring(7);
+            String refreshToken = Arrays.stream(request.getCookies())
+                                        .filter(cookie -> "refreshToken".equals(cookie.getName()))
+                                        .findFirst().map(Cookie::getValue).orElse(null);
             var jwt = jwtDecoder.decode(refreshToken);
-
-            // サブジェクトからユーザー名を取得
+            final String authHeader = request.getHeader("Authorization");
             String username = jwt.getSubject();
-
-            // ユーザー情報の取得
             UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+
+            if (refreshToken == null) {
+                return ResponseEntity.status(401).build();
+            }
 
             // 新しいトークンの生成
             JwtService.JwtToken jwtToken = jwtService.generateToken(userDetails);

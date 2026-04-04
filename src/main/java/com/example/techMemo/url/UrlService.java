@@ -16,6 +16,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class UrlService {
 
     private final UrlRepository repository;
@@ -24,15 +25,15 @@ public class UrlService {
     private final UrlMapper mapper;
 
     //自分のurl一覧
-    @Transactional(readOnly = true)
     public List<UrlResponse> getMyUrls() {
         User user = getUser();
         return repository.findByUserOrderBySortOrderAsc(user)
-            .stream()
-            .map(mapper::toResponse)
-            .toList();
+                         .stream()
+                         .map(mapper::toResponse)
+                         .toList();
     }
 
+    @Transactional
     public UrlResponse create(UrlRequest request) {
         User user = getUser();
 
@@ -45,17 +46,19 @@ public class UrlService {
 
         return mapper.toResponse(saved);
     }
+
     // 記事のURL一覧取得
-    @Transactional(readOnly = true)
+
     public List<UrlResponse> getUrlsByArticle(Long articleId) {
         Article article = getArticleById(articleId);
         return repository.findByArticleOrderBySortOrder(article)
-                            .stream()
-                            .map(mapper::toResponse)
-                            .toList();
+                         .stream()
+                         .map(mapper::toResponse)
+                         .toList();
     }
 
     // URL追加（記事作成時に一緒に使う）
+    @Transactional
     public void createAll(List<UrlRequest> requests, User user, Article article) {
         requests.forEach(req -> {
             Url url = Url.builder()
@@ -69,6 +72,7 @@ public class UrlService {
         });
     }
 
+    @Transactional
     public UrlResponse update(Long urlId, UrlRequest request) {
         User user = getUser();
         Url url = getUrlById(urlId);
@@ -78,40 +82,15 @@ public class UrlService {
     }
 
     // URL削除
+    @Transactional
     public void delete(Long urlId) {
         User user = getUser();
         Url url = getUrlById(urlId);
         checkOwner(url, user);
         repository.delete(url);
     }
-
-
-//    public UrlResponse update(Long id,UrlRequest request) {
-//        User user = getUser();
-//        Url url = findMyUrl(id, user);
-//
-//        if (!url.getUrl().equals(request.url()) &&
-//            repository.existsByUrlAndUser(request.url(), user)) {
-//            throw new IllegalStateException("同じURLが既に登録されています");
-//        }
-//
-//        url.update(
-//            request.url(),
-//            request.title(),
-//            request.memo(),
-//            request.sortOrder()
-//        );
-//
-//        return mapper.toResponse(url);
-//    }
-
-//    public void delete(Long id) {
-//        User user = getUser();
-//        Url url = findMyUrl(id, user);
-//        repository.delete(url);
-//    }
-
-    public UrlResponse attachToArticle(Long urlId,Long articleId) {
+    
+    public UrlResponse attachToArticle(Long urlId, Long articleId) {
         User user = getUser();
         Url url = findMyUrl(urlId, user);
 
@@ -136,19 +115,19 @@ public class UrlService {
 
     private Url getUrlById(Long id) {
         return repository.findById(id)
-                            .orElseThrow(() -> new ResourceNotFoundException("URLが見つかりません"));
+                         .orElseThrow(() -> new ResourceNotFoundException("URLが見つかりません"));
     }
 
 
     private User getUser() {
         String email = SecurityUtils.getCurrentUsername();
         return userRepository.findByEmail(email)
-            .orElseThrow(() -> new ResourceNotFoundException("ユーザーが見つかりません"));
+                             .orElseThrow(() -> new ResourceNotFoundException("ユーザーが見つかりません"));
     }
 
     private Article getArticleById(Long articleId) {
         return articleRepository.findById(articleId)
-            .orElseThrow(() -> new ResourceNotFoundException("記事が見つかりません"));
+                                .orElseThrow(() -> new ResourceNotFoundException("記事が見つかりません"));
     }
 
     private void checkOwner(Url url, User user) {
@@ -159,7 +138,7 @@ public class UrlService {
 
     private Url findMyUrl(Long id, User user) {
         Url url = repository.findById(id)
-            .orElseThrow(() -> new ResourceNotFoundException("URLが見つかりません"));
+                            .orElseThrow(() -> new ResourceNotFoundException("URLが見つかりません"));
 
         if (!url.getUser().equals(user)) {
             throw new UnauthorizedException("このURLを操作する権限がありません");
