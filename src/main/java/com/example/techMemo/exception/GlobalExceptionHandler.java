@@ -46,7 +46,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(UnauthorizedException.class)
-    public ProblemDetail handleUnauthorized(ForbiddenException ex, HttpServletRequest request) {
+    public ProblemDetail handleUnauthorized(UnauthorizedException ex, HttpServletRequest request) {
         ProblemDetail problem = ProblemDetail.forStatus(HttpStatus.UNAUTHORIZED);
         problem.setTitle("Unauthorized");
         problem.setDetail(ex.getMessage());

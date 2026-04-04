@@ -2,7 +2,6 @@ package com.example.techMemo.tag;
 
 import com.example.techMemo.exception.ResourceNotFoundException;
 import com.example.techMemo.mapper.TagMapper;
-import com.example.techMemo.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
@@ -16,7 +15,6 @@ import java.util.List;
 public class TagService {
 
     private final TagRepository repository;
-    private final UserRepository userRepository;
     private final TagMapper mapper;
 
     //タグ全取得

@@ -13,13 +13,6 @@ import java.util.List;
 
 @Repository
 public interface ArticleRepository extends JpaRepository<Article, Long> {
-    List<Article> findByTitleLike(String title);
-
-    List<Article> findByPublicFlag(boolean publicFlag);
-
-    List<Article> findByUser(User user);
-
-    Page<Article> findByUser(User user, Pageable pageable);
 
     Page<Article> findByPublicFlagTrue(Pageable pageable);
 

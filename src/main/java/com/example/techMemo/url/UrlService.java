@@ -4,7 +4,6 @@ import com.example.techMemo.article.ArticleRepository;
 import com.example.techMemo.article.entity.Article;
 import com.example.techMemo.exception.ResourceNotFoundException;
 import com.example.techMemo.mapper.UrlMapper;
-import com.example.techMemo.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,7 +17,6 @@ public class UrlService {
 
     private final UrlRepository repository;
     private final ArticleRepository articleRepository;
-    private final UserRepository userRepository;
     private final UrlMapper mapper;
 
     @Transactional
@@ -27,13 +25,6 @@ public class UrlService {
         Url saved = repository.save(url);
 
         return mapper.toResponse(saved);
-    }
-
-    // 記事更新時にURLを全件入れ替え
-    @Transactional
-    public void updateAll(List<UrlRequest> requests, Article article) {
-        // 既存URL削除はArticle側のorphanRemovalに任せる
-        // ArticleService側でarticle.updateUrls()を呼ぶ設計にする
     }
 
     // URL追加（記事作成時に一緒に使う）

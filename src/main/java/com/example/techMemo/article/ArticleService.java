@@ -112,7 +112,6 @@ public class ArticleService {
 
         // ✅ UrlServiceに委譲
         if (request.urls() != null && !request.urls().isEmpty()) {
-            List<Url> newUrls = urlService.buildUrls(request.urls(), article);
             urlService.createAll(request.urls(), saved);
         }
         return mapper.toResponse(saved, 0L, false);
@@ -129,6 +128,10 @@ public class ArticleService {
 
         List<Tag> tags = tagService.findOrCreateAll(request.tagNames());
         Category category = resolveCategory(request.categoryId());
+        if (request.urls() != null) {
+            List<Url> newUrls = urlService.buildUrls(request.urls(), article);
+            article.updateUrls(newUrls);
+        }
 
         article.update(request.title(), request.content(), request.publicFlag(), category, tags);
 

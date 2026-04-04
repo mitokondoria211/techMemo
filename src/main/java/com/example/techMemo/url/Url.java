@@ -27,10 +27,6 @@ public class Url {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "user_id", nullable = false)
-//    private User user;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "article_id", nullable = false)
     private Article article;
@@ -51,10 +47,4 @@ public class Url {
         this.url = url;
         this.title = title;
     }
-
-    // 記事への紐づけ・解除
-    public void attachToArticle(Article article) {
-        this.article = article;
-    }
-
 }
