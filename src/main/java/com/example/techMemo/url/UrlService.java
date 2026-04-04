@@ -2,8 +2,8 @@ package com.example.techMemo.url;
 
 import com.example.techMemo.article.ArticleRepository;
 import com.example.techMemo.article.entity.Article;
+import com.example.techMemo.exception.ForbiddenException;
 import com.example.techMemo.exception.ResourceNotFoundException;
-import com.example.techMemo.exception.UnauthorizedException;
 import com.example.techMemo.mapper.UrlMapper;
 import com.example.techMemo.user.User;
 import com.example.techMemo.user.UserRepository;
@@ -89,7 +89,8 @@ public class UrlService {
         checkOwner(url, user);
         repository.delete(url);
     }
-    
+
+    @Transactional
     public UrlResponse attachToArticle(Long urlId, Long articleId) {
         User user = getUser();
         Url url = findMyUrl(urlId, user);
@@ -101,6 +102,7 @@ public class UrlService {
         return mapper.toResponse(url);
     }
 
+    @Transactional
     public UrlResponse detachFromArticle(Long urlId) {
         User user = getUser();
         Url url = findMyUrl(urlId, user);
@@ -132,18 +134,14 @@ public class UrlService {
 
     private void checkOwner(Url url, User user) {
         if (!url.getUser().equals(user)) {
-            throw new UnauthorizedException("このURLを操作する権限がありません");
+            throw new ForbiddenException("このURLを操作する権限がありません");
         }
     }
 
     private Url findMyUrl(Long id, User user) {
         Url url = repository.findById(id)
                             .orElseThrow(() -> new ResourceNotFoundException("URLが見つかりません"));
-
-        if (!url.getUser().equals(user)) {
-            throw new UnauthorizedException("このURLを操作する権限がありません");
-        }
-
+        checkOwner(url, user);
         return url;
     }
 }

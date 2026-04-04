@@ -1,7 +1,7 @@
 package com.example.techMemo.bookmark;
 
+import com.example.techMemo.exception.ForbiddenException;
 import com.example.techMemo.exception.ResourceNotFoundException;
-import com.example.techMemo.exception.UnauthorizedException;
 import com.example.techMemo.mapper.BookmarkMapper;
 import com.example.techMemo.user.User;
 import com.example.techMemo.user.UserRepository;
@@ -33,7 +33,7 @@ public class BookmarkService {
         checkOwner(bookmark, user);
         return mapper.toResponse(bookmark);
     }
-    
+
     public Long getMyBookmarksCount() {
         User user = getUser();
         return repository.countByUser(user);
@@ -75,7 +75,7 @@ public class BookmarkService {
 
     private void checkOwner(Bookmark bookmark, User user) {
         if (!user.equals(bookmark.getUser())) {
-            throw new UnauthorizedException("このブックマークを操作する権限はありません");
+            throw new ForbiddenException("このブックマークを操作する権限はありません");
         }
     }
 

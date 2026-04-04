@@ -7,12 +7,12 @@ import com.example.techMemo.article.dto.ArticleUpdateRequest;
 import com.example.techMemo.article.entity.Article;
 import com.example.techMemo.category.Category;
 import com.example.techMemo.category.CategoryRepository;
+import com.example.techMemo.exception.ForbiddenException;
 import com.example.techMemo.exception.ResourceNotFoundException;
 import com.example.techMemo.exception.UnauthorizedException;
 import com.example.techMemo.like.LikeRepository;
 import com.example.techMemo.mapper.ArticleMapper;
 import com.example.techMemo.tag.Tag;
-import com.example.techMemo.tag.TagRepository;
 import com.example.techMemo.tag.TagService;
 import com.example.techMemo.url.UrlService;
 import com.example.techMemo.user.User;
@@ -33,10 +33,8 @@ public class ArticleService {
     private final UserRepository userRepository;
     private final ArticleRepository repository;
     private final CategoryRepository categoryRepository;
-    private final TagRepository tagRepository;
     private final LikeRepository likeRepository;
     private final UrlService urlService;
-    private final ArticleMapper articleMapper;
     private final ArticleMapper mapper;
     private final TagService tagService;
 
@@ -73,13 +71,11 @@ public class ArticleService {
     }
 
 
-    public Long getMyArticlesCountAndPrivate() {
+    public Long getMyPrivateArticlesCount() {
         User user = getUser();
         return repository.countArticleByUserAndPublicFlagFalse(user);
     }
 
-
-    @Transactional(readOnly = true)
     //記事詳細
     public ArticleDetailResponse getArticle(Long id) {
         Article article = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Article not found"));
@@ -115,7 +111,7 @@ public class ArticleService {
         if (request.urls() != null && !request.urls().isEmpty()) {
             urlService.createAll(request.urls(), user, saved);
         }
-        return mapper.toResponse(repository.save(article), 0L, false);
+        return mapper.toResponse(saved, 0L, false);
     }
 
     //記事更新
@@ -175,7 +171,7 @@ public class ArticleService {
     // 本人チェック
     private void checkOwner(Article article, User user) {
         if (!user.getId().equals(article.getUser().getId())) {
-            throw new UnauthorizedException("この記事を操作する権限はありません");
+            throw new ForbiddenException("この記事を操作する権限はありません");
         }
     }
 

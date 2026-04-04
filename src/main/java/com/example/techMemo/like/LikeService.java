@@ -12,15 +12,18 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class LikeService {
     private final LikeRepository repository;
     private final UserRepository userRepository;
     private final ArticleRepository articleRepository;
     private final ArticleMapper articleMapper;
 
+    @Transactional
     public void like(Long articleId) {
         User user = getUser();
         Article article = getArticleById(articleId);
@@ -35,7 +38,7 @@ public class LikeService {
         }
 
         //自分の記事にはいいねできません
-        if (!article.getUser().equals(user)) {
+        if (article.getUser().equals(user)) {
             throw new IllegalStateException("自分の記事にはいいねできません");
         }
 
@@ -43,6 +46,7 @@ public class LikeService {
 
     }
 
+    @Transactional
     public void unlike(Long articleId) {
         User user = getUser();
         Article article = getArticleById(articleId);
@@ -68,12 +72,12 @@ public class LikeService {
     }
 
     public Page<ArticleResponse> getLikedArticles(Pageable pageable) {
-        User  user = getUser();
+        User user = getUser();
         return repository.findByUserOrderByCreatedAtDesc(user, pageable)
-            .map(like -> articleMapper.toResponse(
-                like.getArticle(),
-                repository.countByArticle(like.getArticle()),
-                true));
+                         .map(like -> articleMapper.toResponse(
+                             like.getArticle(),
+                             repository.countByArticle(like.getArticle()),
+                             true));
     }
 
     // ユーザー取得

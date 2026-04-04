@@ -39,7 +39,7 @@ public class ArticleController {
 
     @GetMapping("/me/recent")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<List<ArticleResponse>> getMyArticles(
+    public ResponseEntity<List<ArticleResponse>> getRecentMyArticles(
     ) {
         return ResponseEntity.ok(service.getRecentMyArticles());
     }
@@ -54,7 +54,7 @@ public class ArticleController {
     @GetMapping("/me/count/private")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Long> getMyArticlesCountAndPrivate() {
-        return ResponseEntity.ok(service.getMyArticlesCountAndPrivate());
+        return ResponseEntity.ok(service.getMyPrivateArticlesCount());
     }
 
 
@@ -83,7 +83,6 @@ public class ArticleController {
         @PathVariable Long id,
         @Valid @RequestBody ArticleUpdatePublicFlagRequest request
     ) {
-        service.updateVisibility(id, request.publicFlag());
         return ResponseEntity.ok(service.updateVisibility(id, request.publicFlag()));
     }
 

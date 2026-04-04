@@ -64,7 +64,7 @@ public class TokenRefreshController {
                                         .filter(cookie -> "refreshToken".equals(cookie.getName()))
                                         .findFirst().map(Cookie::getValue).orElse(null);
             var jwt = jwtDecoder.decode(refreshToken);
-            final String authHeader = request.getHeader("Authorization");
+//            final String authHeader = request.getHeader("Authorization");
             String username = jwt.getSubject();
             UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 

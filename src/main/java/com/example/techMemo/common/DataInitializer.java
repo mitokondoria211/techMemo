@@ -1,4 +1,4 @@
-package com.example.techMemo.comon;
+package com.example.techMemo.common;
 
 import com.example.techMemo.article.ArticleRepository;
 import com.example.techMemo.article.entity.Article;
