@@ -8,7 +8,6 @@ public record UrlRequest(
     String title,
     @NotBlank
     @URL
-    String url,
-    int sortOrder
+    String url
 ) {
 }

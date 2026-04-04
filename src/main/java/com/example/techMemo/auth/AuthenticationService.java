@@ -26,35 +26,6 @@ public class AuthenticationService {
     private final AuthenticationManager authenticationManager;
     private final UserMapper userMapper;
 
-//    /**
-//     * 認証リクエスト
-//     *
-//     * @param email メールアドレス
-//     * @param password パスワード
-//     */
-//    public record AuthenticationRequest(String email, String password) {
-//    }
-//
-//    /**
-//     * 登録リクエスト
-//     *
-//     * @param firstname 名前
-//     * @param lastname 姓
-//     * @param email メールアドレス
-//     * @param password パスワード
-//     */
-//    public record RegisterRequest(String firstname, String lastname, String email, String password) {
-//    }
-//
-//    /**
-//     * 認証レスポンス
-//     *
-//     * @param accessToken アクセストークン
-//     * @param refreshToken リフレッシュトークン
-//     */
-//    public record AuthenticationResponse(String accessToken, String refreshToken) {
-//    }
-
     public AuthenticationResponse register(RegisterRequest request, HttpServletResponse response) {
         var user = User.builder()
                        .name(request.name())
@@ -69,9 +40,7 @@ public class AuthenticationService {
 
 
         return new AuthenticationResponse(jwtToken.token(), userMapper.toUserResponse(user));
-//        return AuthenticationResponse.builder()
-//            .token(jwtToken)
-//            .build();
+
     }
 
     public AuthenticationResponse authenticate(AuthenticationRequest request, HttpServletResponse response) {

@@ -14,6 +14,7 @@ import com.example.techMemo.like.LikeRepository;
 import com.example.techMemo.mapper.ArticleMapper;
 import com.example.techMemo.tag.Tag;
 import com.example.techMemo.tag.TagService;
+import com.example.techMemo.url.Url;
 import com.example.techMemo.url.UrlService;
 import com.example.techMemo.user.User;
 import com.example.techMemo.user.UserRepository;
@@ -111,7 +112,8 @@ public class ArticleService {
 
         // ✅ UrlServiceに委譲
         if (request.urls() != null && !request.urls().isEmpty()) {
-            urlService.createAll(request.urls(), user, saved);
+            List<Url> newUrls = urlService.buildUrls(request.urls(), article);
+            urlService.createAll(request.urls(), saved);
         }
         return mapper.toResponse(saved, 0L, false);
     }

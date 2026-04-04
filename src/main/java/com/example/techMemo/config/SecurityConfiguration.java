@@ -48,9 +48,7 @@ public class SecurityConfiguration {
 
     @Value("classpath:keys/public_key.pem")
     private Resource publicKey;
-
-//    private final AuthenticationProvider authenticationProvider;
-
+    
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http,
                                                    RestAuthenticationEntryPoint restAuthenticationEntryPoint,

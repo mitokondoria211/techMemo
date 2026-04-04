@@ -7,8 +7,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/api/v1/urls")
 @RequiredArgsConstructor
@@ -16,11 +14,6 @@ import java.util.List;
 public class UrlController {
 
     private final UrlService service;
-
-    @GetMapping
-    public ResponseEntity<List<UrlResponse>> getMyUrls() {
-        return ResponseEntity.ok(service.getMyUrls());
-    }
 
     @PostMapping
     public ResponseEntity<UrlResponse> create(
@@ -44,19 +37,5 @@ public class UrlController {
         service.delete(id);
         return ResponseEntity.noContent().build();
     }
-
-//    @PatchMapping("/{urlId}/attach/{articleId}")
-//    public ResponseEntity<UrlResponse> attach(
-//        @PathVariable Long urlId,
-//        @PathVariable Long articleId
-//    ) {
-//        return ResponseEntity.ok(service.attachToArticle(urlId, articleId));
-//    }
-//
-//    @PatchMapping("/{urlId}/detach")
-//    public ResponseEntity<UrlResponse> detach(
-//        @PathVariable Long urlId
-//    ) {
-//        return ResponseEntity.ok(service.detachFromArticle(urlId));
-//    }
+    
 }

@@ -81,6 +81,11 @@ public class Article {
         this.tags = tags;
     }
 
+    public void updateUrls(List<Url> newUrls) {
+        this.urls.clear();        // orphanRemoval=trueなので古いURLがDBから自動削除される
+        this.urls.addAll(newUrls);
+    }
+
     public void setPublicFlag(Boolean publicFlag) {
         this.publicFlag = publicFlag != null ? publicFlag : this.publicFlag;
     }

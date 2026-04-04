@@ -432,16 +432,16 @@ public class DataInitializer implements CommandLineRunner {
         Article article2 = articleRepository.findAll().get(2);
         Article article3 = articleRepository.findAll().get(3);
         urlRepository.saveAll(List.of(
-            Url.builder().user(user1).article(article1).url("https://spring.io/docs").title("Spring公式ドキュメント")
-               .sortOrder(0).build(),
-            Url.builder().user(user1).article(article1).url("https://qiita.com/example/jwt").title("Qiita JWT解説記事")
-               .sortOrder(1).build(),
-            Url.builder().user(user1).article(article2).url("https://docs.docker.com").title("Docker公式ドキュメント")
-               .sortOrder(0).build(),
-            Url.builder().user(user2).article(article3).url("https://kubernetes.io/docs")
-               .title("Kubernetes公式ドキュメント").sortOrder(0).build(),
-            Url.builder().user(user1).article(article3).url("https://docs.aws.amazon.com").title("AWS公式ドキュメント")
-               .sortOrder(1).build()
+            Url.builder().article(article1).url("https://spring.io/docs").title("Spring公式ドキュメント")
+               .build(),
+            Url.builder().article(article1).url("https://qiita.com/example/jwt").title("Qiita JWT解説記事")
+               .build(),
+            Url.builder().article(article2).url("https://docs.docker.com").title("Docker公式ドキュメント")
+               .build(),
+            Url.builder().article(article3).url("https://kubernetes.io/docs")
+               .title("Kubernetes公式ドキュメント").build(),
+            Url.builder().article(article3).url("https://docs.aws.amazon.com").title("AWS公式ドキュメント")
+               .build()
         ));
 
         bookmarkRepository.saveAll(List.of(
