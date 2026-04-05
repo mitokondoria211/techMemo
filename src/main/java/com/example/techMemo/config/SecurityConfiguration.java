@@ -73,7 +73,8 @@ public class SecurityConfiguration {
                 .requestMatchers(
                     "/swagger-ui.html",
                     "/swagger-ui/**",
-                    "/v3/api-docs/**"
+                    "/v3/api-docs/**",
+                    "/public/health-check"
                 ).permitAll()
                 .requestMatchers("/api/v1/auth/**", "/api/v1/**").permitAll()
                 .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")  // ROLE_ADMIN が必要
@@ -91,7 +92,8 @@ public class SecurityConfiguration {
         // フロントURL
         config.setAllowedOrigins(List.of(
             "http://localhost:5173",
-            "http://localhost:3000"
+            "http://localhost:3000",
+            "https://tadahito-techmemo.vercel.app"
         ));
 
         // メソッド
