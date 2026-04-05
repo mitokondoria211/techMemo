@@ -52,6 +52,9 @@ public class SecurityConfiguration {
     @Value("${spring.security.oauth2.resourceserver.jwt.public-key-location}")
     private String publicKeyLocation;
 
+    @Value("${app.cors.allowed-origins}")
+    private List<String> allowedOrigins;
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http,
                                                    RestAuthenticationEntryPoint restAuthenticationEntryPoint,
