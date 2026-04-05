@@ -46,7 +46,7 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
         Pageable pageable
     );
 
-    // ✅ 追加：userの絞り込みだけ加えたメソッド
+    
     @Query(
         value = """
             SELECT DISTINCT a FROM Article a

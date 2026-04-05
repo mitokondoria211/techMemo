@@ -19,14 +19,6 @@ public class UrlService {
     private final ArticleRepository articleRepository;
     private final UrlMapper mapper;
 
-    @Transactional
-    public UrlResponse create(UrlRequest request) {
-        Url url = mapper.toEntity(request);
-        Url saved = repository.save(url);
-
-        return mapper.toResponse(saved);
-    }
-
     // URL追加（記事作成時に一緒に使う）
     @Transactional
     public void createAll(List<UrlRequest> requests, Article article) {
@@ -68,11 +60,6 @@ public class UrlService {
     private Url getUrlById(Long id) {
         return repository.findById(id)
                          .orElseThrow(() -> new ResourceNotFoundException("URLが見つかりません"));
-    }
-
-    private Article getArticleById(Long articleId) {
-        return articleRepository.findById(articleId)
-                                .orElseThrow(() -> new ResourceNotFoundException("記事が見つかりません"));
     }
 
 }

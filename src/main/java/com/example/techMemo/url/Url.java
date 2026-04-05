@@ -16,8 +16,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-// ユーザー×URLでユニーク制約
-// ユニーク制約も article_id + url に変更
 @Table(
     uniqueConstraints = @UniqueConstraint(columnNames = {"article_id", "url"})
 )

@@ -52,19 +52,14 @@ public class Article {
     @Builder.Default
     private List<Tag> tags = new ArrayList<>();
 
-    // URLとの関係（urlsテーブルのarticle_idで紐づく）
-    // Article.java に追加
     @OneToMany(mappedBy = "article", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<Url> urls = new ArrayList<>();
-// ✅ 記事削除時にURLも一緒に削除される
-// ✅ orphanRemoval=trueで記事からURLを外すと自動削除
 
 
     @OneToMany(mappedBy = "article", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<Like> likes = new ArrayList<>();
-
 
     @CreationTimestamp
     private LocalDateTime createdAt;
@@ -82,7 +77,7 @@ public class Article {
     }
 
     public void updateUrls(List<Url> newUrls) {
-        this.urls.clear();        // orphanRemoval=trueなので古いURLがDBから自動削除される
+        this.urls.clear();
         this.urls.addAll(newUrls);
     }
 

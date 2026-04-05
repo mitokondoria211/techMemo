@@ -56,9 +56,7 @@ public class AuthenticationService {
         var user = repository.findByEmail(request.email())
                              .orElseThrow(() -> new UsernameNotFoundException("User not Found"));
         var jwtToken = jwtService.generateToken(authentication);
-        // 🔥 refreshTokenをcookieへ
         setCookieFromRefreshToken(jwtToken.refreshToken(), response);
-        // 🔥 refreshTokenをcookieへ
         return new AuthenticationResponse(jwtToken.token(), userMapper.toUserResponse(user));
 
     }

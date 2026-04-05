@@ -2,7 +2,6 @@ package com.example.techMemo.url;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -14,13 +13,6 @@ import org.springframework.web.bind.annotation.*;
 public class UrlController {
 
     private final UrlService service;
-
-    @PostMapping
-    public ResponseEntity<UrlResponse> create(
-        @RequestBody @Valid UrlRequest urlRequest
-    ) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(service.create(urlRequest));
-    }
 
     @PutMapping("/{id}")
     public ResponseEntity<UrlResponse> update(
@@ -37,5 +29,5 @@ public class UrlController {
         service.delete(id);
         return ResponseEntity.noContent().build();
     }
-    
+
 }

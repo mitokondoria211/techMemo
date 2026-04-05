@@ -39,7 +39,7 @@ import java.util.UUID;
 
 @Configuration
 @EnableWebSecurity
-@EnableMethodSecurity  // ← 追加
+@EnableMethodSecurity
 @RequiredArgsConstructor
 public class SecurityConfiguration {
 
@@ -48,7 +48,7 @@ public class SecurityConfiguration {
 
     @Value("classpath:keys/public_key.pem")
     private Resource publicKey;
-    
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http,
                                                    RestAuthenticationEntryPoint restAuthenticationEntryPoint,
