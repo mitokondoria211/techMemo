@@ -21,3 +21,6 @@ jwt:
 app:
   security:
     private-key-location: classpath:keys/private_key.pem
+
+server:
+  port: ${PORT:8080}
