@@ -3,3 +3,12 @@ spring:
     hibernate:
       ddl-auto: validate
     show-sql: false
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          public-key-location: file:/etc/secrets/public_key.pem
+
+app:
+  security:
+    private-key-location: file:/etc/secrets/private_key.pem

@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -43,11 +44,13 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class SecurityConfiguration {
 
-    @Value("classpath:keys/private_key.pem")
-    private Resource privateKey;
+    private final ResourceLoader resourceLoader;
 
-    @Value("classpath:keys/public_key.pem")
-    private Resource publicKey;
+    @Value("${app.security.private-key-location}")
+    private String privateKeyLocation;
+
+    @Value("${spring.security.oauth2.resourceserver.jwt.public-key-location}")
+    private String publicKeyLocation;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http,
@@ -99,7 +102,6 @@ public class SecurityConfiguration {
         // ヘッダー
         config.setAllowedHeaders(List.of("*"));
 
-        // JWT使うなら基本true
         config.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source =
@@ -145,7 +147,8 @@ public class SecurityConfiguration {
     }
 
     private RSAPrivateKey loadPrivateKey() throws Exception {
-        String pem = new String(privateKey.getInputStream().readAllBytes())
+        Resource resource = resourceLoader.getResource(privateKeyLocation);
+        String pem = new String(resource.getInputStream().readAllBytes())
             .replace("-----BEGIN PRIVATE KEY-----", "")
             .replace("-----END PRIVATE KEY-----", "")
             .replaceAll("\\s", "");
@@ -156,7 +159,8 @@ public class SecurityConfiguration {
     }
 
     private RSAPublicKey loadPublicKey() throws Exception {
-        String pem = new String(publicKey.getInputStream().readAllBytes())
+        Resource resource = resourceLoader.getResource(publicKeyLocation);
+        String pem = new String(resource.getInputStream().readAllBytes())
             .replace("-----BEGIN PUBLIC KEY-----", "")
             .replace("-----END PUBLIC KEY-----", "")
             .replaceAll("\\s", "");
