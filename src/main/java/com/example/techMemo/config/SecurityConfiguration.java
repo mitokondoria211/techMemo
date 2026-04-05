@@ -55,8 +55,6 @@ public class SecurityConfiguration {
                                                    RestAccessDeniedHandler restAccessDeniedHandler
     ) throws Exception {
         http
-
-            // 👇 最新はここでCORS
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .csrf(AbstractHttpConfigurer::disable)
 

@@ -1,6 +1,5 @@
 package com.example.techMemo.url;
 
-import com.example.techMemo.article.ArticleRepository;
 import com.example.techMemo.article.entity.Article;
 import com.example.techMemo.exception.ResourceNotFoundException;
 import com.example.techMemo.mapper.UrlMapper;
@@ -16,7 +15,6 @@ import java.util.List;
 public class UrlService {
 
     private final UrlRepository repository;
-    private final ArticleRepository articleRepository;
     private final UrlMapper mapper;
 
     // URL追加（記事作成時に一緒に使う）
