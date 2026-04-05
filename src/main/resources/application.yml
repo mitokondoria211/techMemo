@@ -6,20 +6,8 @@ spring:
     driver-class-name: org.postgresql.Driver
   jpa:
     open-in-view: false
-    hibernate:
-      ddl-auto: create-drop
-    show-sql: true
-    properties:
-      hibernate:
-        format_sql: true
     database: PostgreSQL
     database-platform: org.hibernate.dialect.PostgreSQLDialect
-
-  profiles:
-    active: dev
-  config:
-    activate:
-      on-profile: dev
   security:
     oauth2:
       resourceserver:
@@ -29,6 +17,7 @@ spring:
 jwt:
   expiration: ${JWT_EXPIRATION}
   refresh-expiration: ${JWT_REFRESH_EXPIRATION}
+
 app:
   security:
     private-key-location: classpath:keys/private_key.pem
