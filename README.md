@@ -46,22 +46,71 @@ React + REST APIの構成に移行しました。
 ## セットアップ
 
 ### 必要な環境
-- Java 17以上
+- Java 21以上
 - PostgreSQL 14以上
 
-### 環境変数
+### 1. RSA鍵ペアの生成
+
+JWT認証にRSA方式を使用しているため、鍵ペアを生成して配置する必要があります。
+
+```bash
+mkdir -p src/main/resources/keys
+
+# 秘密鍵の生成
+openssl genrsa -out src/main/resources/keys/private_key.pem 2048
+
+# 公開鍵の抽出
+openssl rsa -in src/main/resources/keys/private_key.pem \
+  -pubout -out src/main/resources/keys/public_key.pem
+```
+
+### 2. 環境変数の設定
+
+`.env` ファイルをプロジェクトルートに作成するか、シェルにエクスポートしてください。
+
+```bash
 DB_URL=jdbc:postgresql://localhost:5432/techmemo
 DB_USERNAME=your_username
 DB_PASSWORD=your_password
 JWT_EXPIRATION=3600000
 JWT_REFRESH_EXPIRATION=604800000
-
-### 起動
-```bash
-./mvnw spring-boot:run
+CORS_ALLOWED_ORIGINS=http://localhost:3000
 ```
 
-起動時に開発用ダミーデータが自動で投入されます。
+| 変数名 | 説明 | 例 |
+|---|---|---|
+| `DB_URL` | PostgreSQL接続URL | `jdbc:postgresql://localhost:5432/techmemo` |
+| `DB_USERNAME` | DBユーザー名 | `postgres` |
+| `DB_PASSWORD` | DBパスワード | `password` |
+| `JWT_EXPIRATION` | アクセストークン有効期限（ミリ秒） | `3600000`（1時間） |
+| `JWT_REFRESH_EXPIRATION` | リフレッシュトークン有効期限（ミリ秒） | `604800000`（7日間） |
+| `CORS_ALLOWED_ORIGINS` | CORSで許可するオリジン | `http://localhost:3000` |
+
+### 3. データベースの準備
+
+```sql
+CREATE DATABASE techmemo;
+```
+
+### 4. 起動
+
+devプロファイルを指定して起動します。devプロファイルでは起動時にテーブルの再作成とダミーデータの投入が行われます。
+
+```bash
+./mvnw spring-boot:run -Dspring-boot.run.profiles=dev
+```
+
+環境変数をコマンドラインで渡す場合:
+
+```bash
+DB_URL=jdbc:postgresql://localhost:5432/techmemo \
+DB_USERNAME=postgres \
+DB_PASSWORD=password \
+JWT_EXPIRATION=3600000 \
+JWT_REFRESH_EXPIRATION=604800000 \
+CORS_ALLOWED_ORIGINS=http://localhost:3000 \
+./mvnw spring-boot:run -Dspring-boot.run.profiles=dev
+```
 
 ## API仕様
 
