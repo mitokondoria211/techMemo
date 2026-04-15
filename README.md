@@ -43,6 +43,77 @@ TechMemoのバックエンドAPIです。
 React + REST APIの構成に移行しました。
 分離するにあたりセッション管理ではなくJWT認証を採用しました。
 
+## ER図
+
+```mermaid
+erDiagram
+  users {
+    uuid id PK
+    string name
+    string email
+    enum role
+    timestamp created_at
+    timestamp updated_at
+  }
+  categories {
+    bigint id PK
+    string name
+    timestamp created_at
+    timestamp updated_at
+  }
+  tags {
+    bigint id PK
+    string name
+    timestamp created_at
+    timestamp updated_at
+  }
+  articles {
+    bigint id PK
+    string title
+    text content
+    boolean public_flag
+    uuid user_id FK
+    bigint category_id FK
+    timestamp created_at
+    timestamp updated_at
+  }
+  article_tags {
+    bigint article_id FK
+    bigint tag_id FK
+  }
+  urls {
+    bigint id PK
+    bigint article_id FK
+    string url
+    string title
+    timestamp created_at
+    timestamp updated_at
+  }
+  likes {
+    bigint id PK
+    uuid user_id FK
+    bigint article_id FK
+    timestamp created_at
+  }
+  bookmarks {
+    bigint id PK
+    uuid user_id FK
+    string url
+    string title
+    string memo
+    timestamp created_at
+    timestamp updated_at
+  }
+
+  users ||--o{ articles : "writes"
+  users ||--o{ likes : "likes"
+  users ||--o{ bookmarks : "saves"
+  categories ||--o{ articles : "categorizes"
+  articles ||--o{ article_tags : "has"
+  tags ||--o{ article_tags : "tagged by"
+  articles ||--o{ urls : "has"
+  articles ||--o{ likes : "receives"
+```
 ## セットアップ
 
 ### 必要な環境
