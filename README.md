@@ -5,7 +5,7 @@ TechMemoのバックエンドAPIです。
 
 ## 使用技術
 
-- Java 17
+- Java 21
 - Spring Boot 3.x
 - Spring Security（JWT認証 / RSA方式）
 - Spring Data JPA
@@ -46,7 +46,7 @@ React + REST APIの構成に移行しました。
 ## セットアップ
 
 ### 必要な環境
-- Java 17以上
+- Java 21以上
 - PostgreSQL 14以上
 
 ### 環境変数
