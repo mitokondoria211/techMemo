@@ -13,6 +13,12 @@ spring:
       resourceserver:
         jwt:
           public-key-location: classpath:keys/public_key.pem
+  profiles:
+    default: dev
+
+data:
+  init:
+    password: ${LOGIN_PASSWORD}
 
 jwt:
   expiration: ${JWT_EXPIRATION}

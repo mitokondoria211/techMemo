@@ -15,6 +15,7 @@ import com.example.techMemo.user.User;
 import com.example.techMemo.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -36,6 +37,9 @@ public class DataInitializer implements CommandLineRunner {
     private final BookmarkRepository bookmarkRepository;
     private final PasswordEncoder passwordEncoder;
 
+    @Value("${data.init.password}")
+    private String initPassword;
+
     @Override
     public void run(String... args) throws Exception {
 
@@ -56,11 +60,13 @@ public class DataInitializer implements CommandLineRunner {
 
     private void insertUsers() {
         userRepository.saveAll(List.of(
-            User.builder().name("ミートソース").email("test1@test.com").password(passwordEncoder.encode("password"))
+            User.builder().name("山田 太郎").email("test1@test.com").password(passwordEncoder.encode(initPassword))
                 .role(Role.ADMIN).build(),
-            User.builder().name("テスト").email("test2@test.com").password(passwordEncoder.encode("password"))
+            User.builder().name("佐藤 花子").email("test2@test.com").password(passwordEncoder.encode(initPassword))
                 .role(Role.USER).build(),
-            User.builder().name("田中太郎").email("test3@test.com").password(passwordEncoder.encode("password"))
+            User.builder().name("田中 健二").email("test3@test.com").password(passwordEncoder.encode(initPassword))
+                .role(Role.USER).build(),
+            User.builder().name("ゲスト").email("guest@example.com").password(passwordEncoder.encode(initPassword))
                 .role(Role.USER).build()
         ));
         log.info("ユーザー登録完了");
@@ -100,6 +106,7 @@ public class DataInitializer implements CommandLineRunner {
         User user1 = userRepository.findByEmail("test1@test.com").orElseThrow();
         User user2 = userRepository.findByEmail("test2@test.com").orElseThrow();
         User user3 = userRepository.findByEmail("test3@test.com").orElseThrow();
+        User guest = userRepository.findByEmail("guest@example.com").orElseThrow();
 
         Category backend = categoryRepository.findByName("バックエンド").orElseThrow();
         Category frontend = categoryRepository.findByName("フロントエンド").orElseThrow();
@@ -427,6 +434,30 @@ public class DataInitializer implements CommandLineRunner {
                    .category(arch).tags(List.of(java, springBoot)).build()
         ));
 
+        // ===== ゲスト記事 (5件) =====
+        articleRepository.saveAll(List.of(
+            Article.builder().title("Spring Bootで始めるREST API入門")
+                   .content("初めてSpring BootでREST APIを作ったときのメモです。")
+                   .publicFlag(true).user(guest).category(backend)
+                   .tags(List.of(springBoot, java, restApi)).build(),
+            Article.builder().title("ReactとTypeScriptで型安全なフォームを作る")
+                   .content("react-hook-formとZodを組み合わせたフォーム実装の記録。")
+                   .publicFlag(true).user(guest).category(frontend)
+                   .tags(List.of(react, typescript)).build(),
+            Article.builder().title("PostgreSQLで外部キー制約を理解する")
+                   .content("CASCADE動作とJPAとの関係についてまとめました。")
+                   .publicFlag(true).user(guest).category(database)
+                   .tags(List.of(postgresql)).build(),
+            Article.builder().title("Docker Composeで開発環境を整える")
+                   .content("Spring Boot + PostgreSQL環境をDocker Composeで構築した手順メモ。")
+                   .publicFlag(true).user(guest).category(infra)
+                   .tags(List.of(docker, springBoot, postgresql)).build(),
+            Article.builder().title("JWT認証の仕組みを整理する")
+                   .content("アクセストークンとリフレッシュトークンの役割と実装パターン。")
+                   .publicFlag(true).user(guest).category(security)
+                   .tags(List.of(jwt, springBoot)).build()
+        ));
+
         // ===== URL (代表的なもの) =====
         Article article1 = articleRepository.findAll().getFirst();
         Article article2 = articleRepository.findAll().get(2);
@@ -514,9 +545,47 @@ public class DataInitializer implements CommandLineRunner {
                     .url("https://regex101.com/")
                     .title("Regex101")
                     .memo("正規表現テストツール")
+                    .build(),
+
+            // ===== ゲストのブックマーク =====
+            Bookmark.builder()
+                    .user(guest)
+                    .url("https://spring.io/projects/spring-boot")
+                    .title("Spring Boot Docs")
+                    .memo("Spring Boot公式ドキュメント")
+                    .build(),
+
+            Bookmark.builder()
+                    .user(guest)
+                    .url("https://react.dev/")
+                    .title("React Docs")
+                    .memo("React公式ドキュメント")
+                    .build(),
+
+            Bookmark.builder()
+                    .user(guest)
+                    .url("https://www.postgresql.org/docs/")
+                    .title("PostgreSQL Docs")
+                    .memo("PostgreSQL公式ドキュメント")
+                    .build(),
+
+            Bookmark.builder()
+                    .user(guest)
+                    .url("https://docs.docker.com/")
+                    .title("Docker Docs")
+                    .memo("Docker公式ドキュメント")
+                    .build(),
+
+            Bookmark.builder()
+                    .user(guest)
+                    .url("https://zenn.dev/")
+                    .title("Zenn")
+                    .memo("日本のエンジニア向け技術記事サイト")
                     .build()
 
         ));
+
+
         log.info("記事・URL登録完了");
     }
 }
