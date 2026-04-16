@@ -1,5 +1,9 @@
 # TechMemo Backend
 
+![Java](https://img.shields.io/badge/Java-21-007396?logo=java)
+![Spring Boot](https://img.shields.io/badge/SpringBoot-3.x-6DB33F?logo=springboot)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-14+-336791?logo=postgresql)
+
 TechMemoのバックエンドAPIです。
 フロントエンドリポジトリ: [techmemo-frontend](フロントのGitHubのURL)
 
@@ -11,6 +15,7 @@ TechMemoのバックエンドAPIです。
 - Spring Data JPA
 - MapStruct
 - PostgreSQL
+
 
 ## 主な機能
 
@@ -43,6 +48,21 @@ TechMemoのバックエンドAPIです。
 React + REST APIの構成に移行しました。
 分離するにあたりセッション管理ではなくJWT認証を採用しました。
 
+## ディレクトリ構成
+```
+src/main/java/com/example/techMemo/
+├── article/       # 記事CRUD・検索・公開切り替え
+├── auth/          # 認証（登録・ログイン・トークンリフレッシュ）
+├── bookmark/      # ブックマーク管理
+├── category/      # カテゴリ管理
+├── config/        # SecurityConfig・JWTService・RSA設定
+├── exception/     # GlobalExceptionHandler・カスタム例外
+├── like/          # いいね機能
+├── mapper/        # MapStructマッパー
+├── tag/           # タグ管理・findOrCreate
+├── url/           # 記事に紐づく参照URL管理
+└── user/          # ユーザー情報
+```
 ## ER図
 
 ```mermaid
@@ -133,6 +153,28 @@ JWT_REFRESH_EXPIRATION=604800000
 ```
 
 起動時に開発用ダミーデータが自動で投入されます。
+
+## 主なAPIエンドポイント
+
+| メソッド | パス | 説明 | 認証 |
+|--------|------|------|------|
+| POST | /api/v1/auth/register | ユーザー登録 | 不要 |
+| POST | /api/v1/auth/authenticate | ログイン | 不要 |
+| POST | /api/v1/auth/refresh-token | トークン更新 | Cookie |
+| GET | /api/v1/articles | 公開記事一覧 | 不要 |
+| POST | /api/v1/articles | 記事作成 | 必要 |
+| GET | /api/v1/articles/me | 自分の記事一覧 | 必要 |
+| PATCH | /api/v1/articles/{id}/visibility | 公開/非公開切替 | 必要 |
+| POST | /api/v1/articles/{id}/likes | いいね | 必要 |
+| GET | /api/v1/bookmarks | ブックマーク一覧 | 必要 |
+
+## デプロイ
+
+| 環境 | URL |
+|------|-----|
+| バックエンド（Render） | https://techmemo-p29y.onrender.com |
+| フロントエンド（Vercel） | https://tadahito-techmemo.vercel.app |
+| Swagger UI | https://techmemo-p29y.onrender.com/swagger-ui.html |
 
 ## API仕様
 
