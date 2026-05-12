@@ -5,7 +5,7 @@
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-14+-336791?logo=postgresql)
 
 TechMemoのバックエンドAPIです。
-フロントエンドリポジトリ: [techmemo-frontend](https://github.com/mitokondoria211/techMemo/frontend)
+フロントエンドリポジトリ: [techmemo-frontend](https://github.com/mitokondoria211/techMemo/front)
 
 ## 使用技術
 
